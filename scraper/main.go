@@ -1031,7 +1031,7 @@ type ImageLinks struct {
 }
 
 func main() {
-	psqlInfo := "***REMOVED***"
+	psqlInfo := "your-database-connection-string-here"
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		fmt.Println("Error connecting to database: ", err)
