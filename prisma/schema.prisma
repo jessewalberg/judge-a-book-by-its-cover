@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model books {
+  id             Int     @id @default(autoincrement())
+  title          String
+  authors        String
+  publisher      String
+  published_date String
+  categories     String
+  thumbnail      String
+  upvotes        BigInt? @default(0)
+  downvotes      BigInt? @default(0)
+}
+
+model bookserror {
+  id     Int     @id @default(autoincrement())
+  bookid String? @unique
+}
+
+model notfound {
+  id    Int     @id @default(autoincrement())
+  title String?
+}

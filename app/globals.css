@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 :root {
+  --primary-blue: rgb(72, 161, 217);
+  --primary-pink: rgb(217, 78, 90);
+  --primary-off-white: rgb(246, 253, 250);
+  --primary-orange: rgb(242, 152, 73);
+  --primary-brown: rgb(191, 165, 149);
+  --primary-off-white-hero: rgba(246, 253, 250, 0.9);
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
