@@ -16,8 +16,13 @@ const Game: React.FC = () => {
   const [book, setBook] = useState<BookType>();
   const [isLoading, setIsLoading] = useState(false);
   const [initialRender, setInitialRender] = useState(true);
-  const localStorageBooks = localStorage.getItem("books");
-  if (!localStorageBooks || localStorageBooks === "undefined") {
+  const localStorageBooks =
+    typeof window !== "undefined" ? localStorage.getItem("books") : false;
+
+  if (
+    (!localStorageBooks || localStorageBooks === "undefined") &&
+    typeof window !== "undefined"
+  ) {
     localStorage.setItem("books", JSON.stringify([]));
   }
   const getRandomBook = () => {
