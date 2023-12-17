@@ -32,17 +32,21 @@ const Stats: React.FC<any> = () => {
   if (!book) return <h2>Couldnt find the book!</h2>;
   const upvotes = Number(book.upvotes);
   const downvotes = Number(book.downvotes);
+  const upvotePercentage = Math.round((upvotes / (upvotes + downvotes)) * 100);
+  const downvotePercentage = Math.round(
+    (downvotes / (upvotes + downvotes)) * 100
+  );
   return (
     <section className="flex flex-col justify-center items-center h-full gap-y-6">
       <h2 className="font-bold text-xl">{book.title}</h2>
       <div>
         <p>
           Percentage of people who Up voted:{" "}
-          {String(Math.round((upvotes / (upvotes + downvotes)) * 100))}%
+          {isNaN(upvotePercentage) ? 0 : upvotePercentage}%
         </p>
         <p>
           Percentage of people who Down voted:{" "}
-          {String(Math.round((downvotes / (upvotes + downvotes)) * 100))}%
+          {isNaN(downvotePercentage) ? 0 : downvotePercentage}%
         </p>
         <p>Total Up votes: {String(upvotes)}</p>
         <p>Total Down votes: {String(downvotes)}</p>

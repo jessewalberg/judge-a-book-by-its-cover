@@ -1,20 +1,24 @@
 "use server";
 
 import { prisma } from "@/prisma/db";
+import { Prisma } from "@prisma/client";
+import { BookType } from "../types";
 
-let skipCount: number;
-
-export async function getBooks() {
-  const books = await prisma.books.findMany({ take: 10 });
-  skipCount = 10;
-  return books;
-}
-
-export async function getNextSetOfBooks() {
-  const books = await prisma.books.findMany({ skip: skipCount, take: 10 });
-  console.log(skipCount);
-  skipCount += 10;
-  return books;
+export async function getNextSetOfBooks(previouslySelectedIds: number[]) {
+  let randomRows;
+  if (previouslySelectedIds.length > 0) {
+    randomRows = await prisma.$queryRaw`
+  SELECT * FROM "books"
+  WHERE "id" NOT IN (${Prisma.join(previouslySelectedIds)})
+  ORDER BY RANDOM() LIMIT 10
+`;
+  } else {
+    randomRows = await prisma.$queryRaw`
+  SELECT * FROM "books"
+  ORDER BY RANDOM() LIMIT 10
+`;
+  }
+  return randomRows as BookType[];
 }
 
 export async function upvote(id: number) {

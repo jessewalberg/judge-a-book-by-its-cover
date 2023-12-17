@@ -1,5 +1,5 @@
 "use client";
-import { getBooks, getNextSetOfBooks } from "@/app/game/actions";
+import { getNextSetOfBooks } from "@/app/game/actions";
 import { BookType } from "@/app/types";
 import React, { createContext, useState, useContext, useEffect } from "react";
 
@@ -18,10 +18,13 @@ export const AppProvider = ({ children }: any) => {
   const [books, setBooks] = useState<BookType[]>();
   const [loading, setLoading] = useState(true);
   const [initialRender, setInitialRender] = useState(true);
+  const [previouslySeenBooks, setPreviouslySeenBooks] = useState<number[]>([]);
 
   const removeBook = (bookId: number) => {
     if (!books) return;
     const updatedBooks = books.filter((book) => book.id !== bookId);
+    const updatedPreviouslySeenBooks = [...previouslySeenBooks, bookId];
+    setPreviouslySeenBooks(updatedPreviouslySeenBooks);
     setBooks(updatedBooks);
   };
   const value = {
@@ -34,7 +37,7 @@ export const AppProvider = ({ children }: any) => {
     if (initialRender) {
       const fetchBooks = async () => {
         try {
-          const response = await getBooks();
+          const response = await getNextSetOfBooks(previouslySeenBooks);
           setBooks(response);
         } catch (error) {
           console.error("Error fetching books", error);
@@ -45,14 +48,14 @@ export const AppProvider = ({ children }: any) => {
       fetchBooks();
     }
     setInitialRender(false);
-  }, [initialRender]);
+  }, [initialRender, previouslySeenBooks]);
 
   useEffect(() => {
     if (books && books.length === 0 && !initialRender) {
       setLoading(true);
       const fetchBooks = async () => {
         try {
-          const response = await getNextSetOfBooks();
+          const response = await getNextSetOfBooks(previouslySeenBooks);
           setBooks(response);
         } catch (error) {
           console.error("Error fetching books", error);
@@ -62,7 +65,7 @@ export const AppProvider = ({ children }: any) => {
       };
       fetchBooks();
     }
-  }, [books, initialRender]);
+  }, [books, initialRender, previouslySeenBooks]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
