@@ -14,7 +14,7 @@ export default async function Home() {
         </Link>
         <Link
           className="bg-primary-pink px-6 py-2 text-white font-bold rounded w-32 text-center"
-          href="#"
+          href="/game/not-playing"
         >
           Dont Play
         </Link>
