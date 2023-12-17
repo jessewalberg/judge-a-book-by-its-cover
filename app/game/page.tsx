@@ -1,5 +1,5 @@
 "use client";
-import { useAppContext } from "@/context/app-context";
+import { useAppContext } from "@/providers/app-context";
 import { BookType } from "../types";
 import { useEffect, useState } from "react";
 import Book from "../../components/book";
@@ -20,11 +20,6 @@ const Game: React.FC = () => {
   if (!localStorageBooks || localStorageBooks === "undefined") {
     localStorage.setItem("books", JSON.stringify([]));
   }
-  const getRandomBook = () => {
-    if (!books) return;
-    const randomIndex = Math.floor(Math.random() * books.length);
-    return books[randomIndex];
-  };
 
   useEffect(() => {
     if (initialRender) {
@@ -52,10 +47,11 @@ const Game: React.FC = () => {
   };
   const handleGoodClick = async () => {
     if (!book) return;
+    if (!books || books.length === 0) return;
     setIsLoading(true);
     await upvote(book.id);
     const currentBookId = book.id;
-    const chosenBook = getRandomBook();
+    const chosenBook = books[0];
     const localBooks = localStorage.getItem("books");
     if (localBooks) {
       const parsedBooks = JSON.parse(localBooks);
@@ -65,18 +61,19 @@ const Game: React.FC = () => {
       }
     }
 
-    router.push(`/game/stats?bookId=${currentBookId}`);
-    removeBook(currentBookId);
     setBook(chosenBook);
+    removeBook(currentBookId);
+    router.push(`/game/stats?bookId=${currentBookId}`);
     setIsLoading(false);
   };
 
   const handleBadClick = async () => {
     if (!book) return;
+    if (!books || books.length === 0) return;
     setIsLoading(true);
     await downvote(book.id);
     const currentBookId = book.id;
-    const chosenBook = getRandomBook();
+    const chosenBook = books[0];
     const localBooks = localStorage.getItem("books");
     if (localBooks) {
       const parsedBooks = JSON.parse(localBooks);
@@ -85,9 +82,9 @@ const Game: React.FC = () => {
         localStorage.setItem("books", JSON.stringify(parsedBooks));
       }
     }
-    router.push(`/game/stats?bookId=${currentBookId}`);
     setBook(chosenBook);
     removeBook(currentBookId);
+    router.push(`/game/stats?bookId=${currentBookId}`);
     setIsLoading(false);
   };
   return (
