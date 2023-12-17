@@ -61,6 +61,7 @@ const Game: React.FC = () => {
     await upvote(book.id);
     const currentBookId = book.id;
     const chosenBook = getRandomBook();
+
     const localBooks = localStorage.getItem("books");
     if (localBooks) {
       const parsedBooks = JSON.parse(localBooks);
@@ -71,7 +72,6 @@ const Game: React.FC = () => {
     }
 
     router.push(`/game/stats?bookId=${currentBookId}`);
-    removeBook(currentBookId);
     setBook(chosenBook);
     setIsLoading(false);
   };
@@ -92,7 +92,6 @@ const Game: React.FC = () => {
     }
     router.push(`/game/stats?bookId=${currentBookId}`);
     setBook(chosenBook);
-    removeBook(currentBookId);
     setIsLoading(false);
   };
   return (

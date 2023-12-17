@@ -5,13 +5,22 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getBookById } from "../actions";
 import LoadingSpinner from "@/components/loading-spinner";
+import { useAppContext } from "@/providers/app-context";
 
 const Stats: React.FC<any> = () => {
   const [book, setBook] = useState<BookType>();
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
   const bookId = searchParams.get("bookId");
+  const { books, removeBook, loading } = useAppContext();
+
+  const handleNextBookClick = () => {
+    if (bookId) {
+      removeBook(Number(bookId));
+    }
+    router.push("/game");
+  };
 
   useEffect(() => {
     const getBook = async () => {
@@ -22,13 +31,13 @@ const Stats: React.FC<any> = () => {
       } catch (error) {
         console.error("Error getting book by id: ", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
     getBook();
   }, [bookId]);
 
-  if (loading) return <LoadingSpinner />;
+  if (isLoading || loading) return <LoadingSpinner />;
   if (!book) return <h2>Couldnt find the book!</h2>;
   const upvotes = Number(book.upvotes);
   const downvotes = Number(book.downvotes);
@@ -53,7 +62,7 @@ const Stats: React.FC<any> = () => {
       </div>
       <button
         className="bg-primary-orange text-white px-4 py-2 rounded-md font-bold"
-        onClick={() => router.push("/game")}
+        onClick={handleNextBookClick}
       >
         Next Book
       </button>
