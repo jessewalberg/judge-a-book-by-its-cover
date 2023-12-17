@@ -16,10 +16,20 @@ const Game: React.FC = () => {
   const [book, setBook] = useState<BookType>();
   const [isLoading, setIsLoading] = useState(false);
   const [initialRender, setInitialRender] = useState(true);
-  const localStorageBooks = localStorage.getItem("books");
-  if (!localStorageBooks || localStorageBooks === "undefined") {
+  const localStorageBooks =
+    typeof window !== "undefined" ? localStorage.getItem("books") : false;
+
+  if (
+    (!localStorageBooks || localStorageBooks === "undefined") &&
+    typeof window !== "undefined"
+  ) {
     localStorage.setItem("books", JSON.stringify([]));
   }
+  const getRandomBook = () => {
+    if (!books) return;
+    const randomIndex = Math.floor(Math.random() * books.length);
+    return books[randomIndex];
+  };
 
   useEffect(() => {
     if (initialRender) {
@@ -47,11 +57,10 @@ const Game: React.FC = () => {
   };
   const handleGoodClick = async () => {
     if (!book) return;
-    if (!books || books.length === 0) return;
     setIsLoading(true);
     await upvote(book.id);
     const currentBookId = book.id;
-    const chosenBook = books[0];
+    const chosenBook = getRandomBook();
     const localBooks = localStorage.getItem("books");
     if (localBooks) {
       const parsedBooks = JSON.parse(localBooks);
@@ -61,19 +70,18 @@ const Game: React.FC = () => {
       }
     }
 
-    setBook(chosenBook);
-    removeBook(currentBookId);
     router.push(`/game/stats?bookId=${currentBookId}`);
+    removeBook(currentBookId);
+    setBook(chosenBook);
     setIsLoading(false);
   };
 
   const handleBadClick = async () => {
     if (!book) return;
-    if (!books || books.length === 0) return;
     setIsLoading(true);
     await downvote(book.id);
     const currentBookId = book.id;
-    const chosenBook = books[0];
+    const chosenBook = getRandomBook();
     const localBooks = localStorage.getItem("books");
     if (localBooks) {
       const parsedBooks = JSON.parse(localBooks);
@@ -82,9 +90,9 @@ const Game: React.FC = () => {
         localStorage.setItem("books", JSON.stringify(parsedBooks));
       }
     }
+    router.push(`/game/stats?bookId=${currentBookId}`);
     setBook(chosenBook);
     removeBook(currentBookId);
-    router.push(`/game/stats?bookId=${currentBookId}`);
     setIsLoading(false);
   };
   return (
